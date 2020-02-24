@@ -17,10 +17,10 @@ if (process.env.JAWSDB_URL) {
     connection = mysql.createConnection({
         connectionLimit: 20,
         port:3306,
-        host: 'k2fqe1if4c7uowsh.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-        user: 'cwyw2yiq4aykv1gh',
-        password: 'ppay30spunulweu0',
-        database: 'umy2v16j1tx9hhhu'
+        host: 'l9dwvv6j64hlhpul.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+        user: 'oo9slps47y2jlalu',
+        password: 'cyfg2vos3m7i3izj',
+        database: 'lb4a4vdbieztvy2i'
     });
 };
 

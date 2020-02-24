@@ -1,10 +1,10 @@
 
 
-//for calculators
+//for device logger
 
-DROP DATABASE IF EXISTS umy2v16j1tx9hhhu;
-CREATE DATABASE umy2v16j1tx9hhhu;
-USE umy2v16j1tx9hhhu;
+DROP DATABASE IF EXISTS lb4a4vdbieztvy2i;
+CREATE DATABASE lb4a4vdbieztvy2i;
+USE lb4a4vdbieztvy2i;
 
 
 CREATE TABLE ip_log (
