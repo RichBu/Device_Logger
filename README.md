@@ -13,7 +13,7 @@ Because the original system and design were custom built, not all of the feature
 
 
 Getting Data In:
-Originally the system was a timed logged file that was stored on the network. At the users timed intervals, the data logged file was uploaded to the mySQL database.  Eventually the data was set up to be collected on-line and in real time.
+Originally the system was a batched logged file that was stored on the network. At the users intervals, the data logged file was uploaded to the mySQL database.  Eventually the data was set up to be collected on-line and in real time.
 
 
 Manual Upload:
