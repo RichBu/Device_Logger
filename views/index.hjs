@@ -2,12 +2,12 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>Oval Calculator</title>
+		<title>Device Data Logger</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!--  Designed by Rich Budek @  www.RichBudek.com -->
 		<!--  all rights reserved by Rich Budek -->
-		<meta name="description" content="Oval Calculator">
+		<meta name="description" content="Device Data Logger">
 		<meta name="author" content="Rich Budek">
 		<meta name="author_website" content="www.RichBudek.com">
 		<meta name="copyright" content="Rich Budek at www.RichBudek.com all rights reserved">
@@ -45,7 +45,7 @@
 					-->	
                 </div>
                 <div class="col-xs-4">
-                    <h1>Calculators</h1>
+                    <h1>Device Data Logger</h1>
                     <h3>by Rich Budek</h3>
                 </div>
                 <div class="col-xs-4">
@@ -66,7 +66,7 @@
 						</form>
 					</div>
 					<hr/>
-					<h4>Advanced calculators  (require login)</h4>
+					<h4>Advanced Reports  (require login)</h4>
 					<br/>
 					<div class="row">
 						<form id="login-form" action="/login" method="post">
@@ -94,16 +94,10 @@
 				<div class="divider"></div>
 				<h4>
 					<br/>
-					<br/>This is a website designed by Rich Budek for doing engineering calculations thru a 
-					website.  I have taken some unique problems I have encountered in my engineering career
-					that have no known solutions posted.  I have derived all the formulae myself. At the 
-					present moment I am willing to share the use of the calculations but not necessarily
-					the derivations behind them.  Therefore, the calculations are done in my Web Server's 
-					backend and only the calculations are fed forward for your use thru the use of API calls.
+					<br/>This is a website designed by Rich Budek for doing batched uploading of a network of devices
+					and their data logging file.  A separate PC based application does the uploading using POST commands.
+					The calls are API calls to this app.  The HTML pages here are for the reports. 
 					<br/>
-					<br/> The calculators in the top section are provided for free. For others you need a login.
-					<br/>
-					<br/> If you do not have the login then you will not be able to view the other calculations.
 					<br/>
 					<br/> Rich Budek  rb@RichBudek.com
 					<br/>
@@ -124,18 +118,21 @@
 				<h4>
 					<br/>Rich Budek designed website. Front end, backend, API calls, and all engineering calculations are done by Rich Budek
 					<br/>
-					<br/>This is a website demonstrating the use of a backend API when doing calculations.
+					<br/>This is a website demonstrating the use of a backend API for device data logging.
 					<br/>
-					<br/> The enduser can not see how the calculations were performed. The calculations are 
-					all done in a Node JS backend.  Information is sent via post commands and returned by
-					render commands that have the results embedded in the output.  So looking at the browser
-					source, all the user sees is the HTML tags and the information is hard coded in, looking
-					like a static web page, but it is actually a dynamically generated backend.
+					<br/> The original system was a networked system of devices using static IP addresses. An
+					app collects all the data and stores it into a data logging file.  The app polls all of the 
+					devices in 1 minute intervals and then records their status into a log file.
+					Another PC app written in Visual C# is used to upload this data to this backend.  However,
+					instead of uploading the data as thousands of lines of log data the app first finds all of
+					changes that happened and then creates "events". Events store the start and end times
+					for all the changes that occured.  It is this events file that is uploaded thru an API call.
+					The API calls are all done in a Node JS backend.  
 					<br/>
 					<br/>The forms do API calls to my own backend server.  In addition, to go forward to the 
 					next pages, a post path is done to prevent the user from bookmarking the individual pages.
-					This is done so that in the future, some of the "free" calculators can be moved to the login
-					path and the user will not have access to them either. 
+					This is done so that in the future, some of the pages can be moved to password protected ones
+					with little effort.  
 					<br/>
 					<br/>
 					<br/> Rich Budek  rb@RichBudek.com
