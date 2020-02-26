@@ -45,13 +45,16 @@
 					-->	
                 </div>
                 <div class="col-xs-4">
-                    <h1>Device Data Logger</h1>
-                    <h3>by Rich Budek</h3>
+					<br/>
                 </div>
                 <div class="col-xs-4">
   			      <button id="btn-tech" type="button" class="btn btn-primary aboutButton" >Tech Info</button>
                 </div>
             </div>
+            <div class="row" style="padding: 0px 0px 0px 0px;" >
+                    <h1>Device Data Logger</h1>
+                    <h3>by Rich Budek</h3>
+			</div>
 			<hr/>
         </header>
 		<div class="backgroundIndexStyle">
