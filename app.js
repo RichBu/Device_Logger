@@ -174,6 +174,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //////////////////////////////////////////////////////////////////////////////
 
 app.use('/', require('./routes/index'));
+app.use('/reports', require('./routes/reports'));
 app.use('/video', require('./routes/video'));
 app.use('/calcoval', require('./routes/calcoval'));
 

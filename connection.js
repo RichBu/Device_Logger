@@ -2,14 +2,6 @@
 var mysql = require("mysql");
 var app = require('./app.js');
 
-/*var connection = mysql.createConnection({
-    port: 3306,
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "Imperial_Assault_db"
-});*/
-
 
 if (process.env.JAWSDB_URL) {
     connection = mysql.createConnection(process.env.JAWSDB_URL);
