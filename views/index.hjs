@@ -78,16 +78,12 @@
 						<form id="calc-oval-form" action="/ovalcalc" method="post">
 						</form>
 					</div>
+					<!--
 					<div class="row">
 						<button id="bttnCheckUpload" type="" class="calcButton btn btn-primary" value="bttnCheckUpload">Check Upload</button>
-						<!--
-						<form id="calc-oval-form" action="/api/logfile" method="post">
-						-->
-							<input type="text" name="_fileName" id='_fileName' class="" placeholder="file name">	
-						<!--
-						</form>
-						-->
+						<input type="text" name="_fileName" id='_fileName' class="" placeholder="file name">	
 					</div>
+					-->
 					<hr/>
 					<!--
 					<h4>Advanced Reports  (require login)</h4>
@@ -235,6 +231,8 @@
 		  });
 
 		  $('#bttnCheckUpload').on('click', function (event) {
+			  //this was a button that allowed the testing of the api/logfile
+			  //route
 			  event.preventDefault();
 			  console.log("check upload button")
 			  //$("#calc-oval-form").submit();
