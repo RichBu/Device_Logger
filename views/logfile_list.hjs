@@ -78,7 +78,7 @@
 			<div style="max-height: 1000px;">
                 <div class="row rowStyle row-click" data-row={{movieID}}>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<h4>
+						<h5>
 						<table>
   							<tr class="row row-hover">
     						<th class="tdNorm">Number</th>
@@ -93,7 +93,7 @@
 								</tr>
 							{{/outputObj}}
 						</table>
-						</h4>
+						</h5>
 					</div>
                 </div>
 				<br/>

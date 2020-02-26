@@ -78,6 +78,16 @@
 						<form id="calc-oval-form" action="/ovalcalc" method="post">
 						</form>
 					</div>
+					<div class="row">
+						<button id="bttnCheckUpload" type="" class="calcButton btn btn-primary" value="bttnCheckUpload">Check Upload</button>
+						<!--
+						<form id="calc-oval-form" action="/api/logfile" method="post">
+						-->
+							<input type="text" name="_fileName" id='_fileName' class="" placeholder="file name">	
+						<!--
+						</form>
+						-->
+					</div>
 					<hr/>
 					<!--
 					<h4>Advanced Reports  (require login)</h4>
@@ -222,6 +232,22 @@
 			  console.log("hit Log Files Button")
 			  //$("#calc-oval-form").submit();
 			  window.location.href = '/reports/logfiles';
+		  });
+
+		  $('#bttnCheckUpload').on('click', function (event) {
+			  event.preventDefault();
+			  console.log("check upload button")
+			  //$("#calc-oval-form").submit();
+			  //window.location.href = '/reports/logfiles';
+        	  //var url = $(this).attr("action");
+			  //var url = "/api/logfile";   //local variable
+			  var url = "https://devnetlogger.herokuapp.com/api/logfile";   //AWS variable
+			  var _fileName = $('#_fileName').val();
+        			$.post(url, {
+            			fileName: _fileName
+        			}, function (data, success) {
+            			window.location.href = "/";
+        			});
 		  });
 
     		$(document.body).on("submit", "#login-form", function (event) {
