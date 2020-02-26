@@ -4,12 +4,12 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>WCO NC21 Video List</title>
+		<title>Device Logger</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!--  Designed by Rich Budek @  www.RichBudek.com -->
 		<!--  all rights reserved by Rich Budek -->
-		<meta name="description" content="NC 21 Training Videos">
+		<meta name="description" content="Device Data Logger">
 		<meta name="author" content="Rich Budek">
 		<meta name="author_website" content="www.RichBudek.com">
 		<meta name="copyright" content="Rich Budek at www.RichBudek.com all rights reserved">
@@ -47,11 +47,14 @@
 					-->	
                 </div>
                 <div class="col-xs-4">
-                    <h1>Weidenmiller NC21 Training Videos</h1>
+					<br/>
                 </div>
                 <div class="col-xs-4">
   			      <button id="btn-about" type="button" class="btn btn-primary aboutButton" >About</button>
                 </div>
+            </div>
+            <div class="row" style="padding: 20px 0px 0px 0px;" >
+                <h2>Device Data Log Files Imported</h2>
             </div>
         </header>
 		<div class="backgroundListStyle blankImage">
@@ -71,36 +74,27 @@
 		</div>
         <main class="container container-fluid containerStyle">
 			<div style="max-height: 1000px;">
-				{{#outputObj}}
                 <div class="row rowStyle row-click" data-row={{movieID}}>
 					<hr/>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="row row-hover">
-							<div class="col-lg-10 col-md-10 col-sm-8 col-xs-8">
-								<div class="row">
-									<h3>{{videoTitle}}</h3>
-								</div>	
-							</div>
-							<div class="col-lg-2 col-md-2 col-sm-4 col-xs-4" style="text-align: right">
-								<div class="row">
-									<h4>{{movieID}}</h4>
-								</div>
-							</div>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<div class="row">
-									<h4>{{shortDescrip}}</h4>
-								</div>
-							</div>
-        	            	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<div class="row">
-									<br/><h4>full description:</h4>
-									<h4>{{longDescrip}}</h4>
-								</div>
-							</div>
-						</div>
+						<h4>
+						<table>
+  							<tr class="row row-hover">
+    						<th class="tdNorm">Number</th>
+    						<th class="tdNorm">Uploaded</th>
+							<th class="tdNorm">File name   </th>
+  							</tr>
+							{{#outputObj}}
+								<tr class="row row-hover">
+									<td class="tdNorm">{{files_log_id}}</td>
+									<td class="tdNorm">{{time_of_upload_str}}</td>
+									<td class="tdNorm">{{filename_str}}</td>
+								</tr>
+							{{/outputObj}}
+						</table>
+						</h4>
 					</div>
                 </div>
-				{{/outputObj}}
 				<br/>
 				<br/>
 				<br/>
@@ -112,7 +106,7 @@
         <div class="text-center navbar navbar-fixed-bottom" id='footer'>
             <div class="container-fluid">
                 <br/>
-                <span id='copyright'>© 2019 Copyright</span>
+                <span id='copyright'>© 2020 Copyright by Rich Budek all rights reserved</span>
             </div>
         </div>
         <!-- </footer> -->
@@ -123,13 +117,15 @@
 				<h3>Website Information</h3>
 				<div class="divider"></div>
 				<h4>
-					<br/>This is a private website for training and demonstration
-					<br/>of NC21 machine used at Weidenmiller Company.
+					<br/>These are all of the log files that were imported.
+					A separate app takes the logfiles created and batch uploads
+					them to this database. Separate POST API's handle this.
+					Still another app, developed later takes the real time 
+					and appends it to this database real time.
+					This Node JS / HTML app displayes everything collected.
 					<br/>
-					<br/> If you do not have permission to view these pages,
-					<br/> then you should exit immediately.
 					<br/>
-					<br/> Thank-you
+					<br/> Rich Budek   RB@RichBudek.com
 					<br/>
 				</h4>
 				<div style="padding: 20px 0px 10px 0px;"  class="divider">

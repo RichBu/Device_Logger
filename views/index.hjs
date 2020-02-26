@@ -66,12 +66,12 @@
 						</form>
 					</div>
 					<div class="row">
-						<button id="OvalCalcBttn" type="" class="calcButton btn btn-primary" value="bttnLoggedData">Logged Data</button>
+						<button id="bttnLoggedData" type="" class="calcButton btn btn-primary" value="bttnLoggedData">Logged Data</button>
 						<form id="calc-oval-form" action="/ovalcalc" method="post">
 						</form>
 					</div>
 					<div class="row">
-						<button id="OvalCalcBttn" type="" class="calcButton btn btn-primary" value="bttnCalcOval">Machine Utilization Rates</button>
+						<button id="bttnMachineUtilRates" type="" class="calcButton btn btn-primary" value="bttnMachineUtilRates">Machine Utilization Rates</button>
 						<form id="calc-oval-form" action="/ovalcalc" method="post">
 						</form>
 					</div>
@@ -214,11 +214,11 @@
 		  });
 
 
-		  $('#OvalCalcBttn').on('click', function (event) {
+		  $('#bttnLogFiles').on('click', function (event) {
 			  event.preventDefault();
-			  console.log("hit the oval calc button")
-			  $("#calc-oval-form").submit();
-			  //window.location.href = '/calcoval';
+			  console.log("hit Log Files Button")
+			  //$("#calc-oval-form").submit();
+			  window.location.href = '/reports/logfiles';
 		  });
 
     		$(document.body).on("submit", "#login-form", function (event) {

@@ -29,9 +29,9 @@ class userLogRecStoreType {
 
 router.get('/logfiles', function(req, res, next) {
 	//display list of logged files
+	console.log('/reports/logfiles route');
+
 	var logFileListOutput = [];  //array for use in listing
-	var videoListOutput = [];
-	var videoListOutput2 = [];
 
 	//check if logged in, later feature
 	//for now, bypass
@@ -48,7 +48,7 @@ router.get('/logfiles', function(req, res, next) {
 		);
 
 
-		var query = "INSERT INTO user_log (time_str, ip_addr, action_done, action_string) VALUES (?, ?, ?, ?, ?, ? )";
+		var query = "INSERT INTO user_log (time_str, ip_addr, action_done, action_string) VALUES (?, ?, ?, ? )";
 		connection.query(query, [
 		  userLogRec.timeStr,
 		  userLogRec.clientIP,
@@ -59,7 +59,8 @@ router.get('/logfiles', function(req, res, next) {
 
 		  var queryStr = "SELECT * FROM files_log";
 
-		  function logFileListObj( _time_of_upload, _filename_str ) {
+		  function logFileListObj( _files_log_id, _time_of_upload, _filename_str ) {
+			  this.files_log_id = _files_log_id;
 			  this.time_of_upload_str = _time_of_upload;
 			  this.filename_str = _filename_str
 		  };
@@ -69,15 +70,18 @@ router.get('/logfiles', function(req, res, next) {
 			  //console.log(response);
 			  for (var i = 0; i < response.length; i++) {
 				  //loop thru all of the responses
+				  //console.log(response);
+				  //console.log(response[i]);
 				  logFileListOutput.push(new logFileListObj(
+					  response[i].files_log_id,
 					  response[i].time_of_upload_str,
-					  reponse[i].filename_str
+					  response[i].filename_str
 				  ));
 			  };
 			  //console.log(videoListOutput);
-			  res.render('video_list', {outputObj: videoListOutput});
+			  res.render('logfile_list', {outputObj: logFileListOutput});
 			  //connection.end();
-		  }); //query for read movies  
+		  }); //query for read logfiles  
 		});  //query to write to user log	
 	} else {
 		var actionDone = 'log file list';		
