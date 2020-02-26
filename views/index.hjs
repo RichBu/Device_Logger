@@ -61,12 +61,12 @@
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-8 col-xs-10 inputDivStyle">
 					<div class="row">
-						<button id="OvalCalcBttn" type="" class="calcButton btn btn-primary" value="bttnCalcOval">Log Files Imported</button>
+						<button id="bttnLogFiles" type="" class="calcButton btn btn-primary" value="bttnLogFiles">Log Files Imported</button>
 						<form id="calc-oval-form" action="/ovalcalc" method="post">
 						</form>
 					</div>
 					<div class="row">
-						<button id="OvalCalcBttn" type="" class="calcButton btn btn-primary" value="bttnCalcOval">Logged Data</button>
+						<button id="OvalCalcBttn" type="" class="calcButton btn btn-primary" value="bttnLoggedData">Logged Data</button>
 						<form id="calc-oval-form" action="/ovalcalc" method="post">
 						</form>
 					</div>

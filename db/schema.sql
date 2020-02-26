@@ -30,7 +30,7 @@ CREATE TABLE user_log (
     time_str VARCHAR(19),
     ip_addr VARCHAR(16),
     action_done VARCHAR(20),
-    actiion_string VARCHAR(80),
+    action_string VARCHAR(80),
     PRIMARY KEY (user_log_id)
 );
 
@@ -51,6 +51,7 @@ CREATE TABLE event_log (
 
 CREATE TABLE files_log (
     files_log_id INT NOT NULL AUTO_INCREMENT,
+    time_of_upload_str VARCHAR(20),  
     filename_str VARCHAR(75),
     PRIMARY KEY (files_log_id)
 );

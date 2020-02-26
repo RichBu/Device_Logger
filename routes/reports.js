@@ -18,53 +18,50 @@ const math = require('mathjs');
 
 //put in a separate file
 class userLogRecStoreType {
-	constructor( _timeStr, _clientIP, _loginName, _password, _fullName, _action_done ) {
+	constructor( _timeStr, _clientIP, _action_done, _action_string ) {
 	  this.timeStr = _timeStr;
 	  this.clientIP = _clientIP;
-	  this.loginName = _loginName;
-	  this.password = _password;
-	  this.fullName = _fullName;
-	  this.action_done = _action_done
+	  this.action_done = _action_done;
+	  this.action_string = _action_string;
 	}
   };
 
 
 router.get('/logfiles', function(req, res, next) {
 	//display list of logged files
+	var logFileListOutput = [];  //array for use in listing
 	var videoListOutput = [];
 	var videoListOutput2 = [];
 
-	//check if logged in
-	if (req.session.logged_in === true ) {
-		var actionDone = 'video list';		
+	//check if logged in, later feature
+	//for now, bypass
+	let noLogin = true;
+	if (noLogin || req.session.logged_in === true ) {
+		var actionDone = 'log files list';		
+		var actionString = 'hit the log files with .get route';
+		
 		let userLogRec = new userLogRecStoreType(
 			moment().format("YYYY-MM-DD  HH:mm a"),
 			req.session.clientIP,
-			req.session.loginName,
-			req.session.password,
-			req.session.fullName,
-			actionDone
+			actionDone,
+			actionString
 		);
-	
-		var query = "INSERT INTO user_log (time_str, ip_addr, loginName, password, fullName, action_done) VALUES (?, ?, ?, ?, ?, ? )";
+
+
+		var query = "INSERT INTO user_log (time_str, ip_addr, action_done, action_string) VALUES (?, ?, ?, ?, ?, ? )";
 		connection.query(query, [
 		  userLogRec.timeStr,
 		  userLogRec.clientIP,
-		  userLogRec.loginName,
-		  userLogRec.password,
-		  userLogRec.fullName,
-		  userLogRec.action_done
+		  userLogRec.action_done,
+		  userLogRec.action_string
 		  ], function (err, response) {
 		  //what to do after the log has been written
 
-		  var queryStr = "SELECT * FROM movies";
+		  var queryStr = "SELECT * FROM files_log";
 
-		  function videoListObj( _movieID, _videoTitle, _fileName, _shortDescrip, _longDescrip ) {
-			  this.movieID = _movieID;
-			  this.videoTitle = _videoTitle;
-			  this.fileName = _fileName;
-			  this.shortDescrip = _shortDescrip;
-			  this.longDescrip = _longDescrip
+		  function logFileListObj( _time_of_upload, _filename_str ) {
+			  this.time_of_upload_str = _time_of_upload;
+			  this.filename_str = _filename_str
 		  };
 	  
 		  connection.query(queryStr, [], function (err, response) {
@@ -72,12 +69,9 @@ router.get('/logfiles', function(req, res, next) {
 			  //console.log(response);
 			  for (var i = 0; i < response.length; i++) {
 				  //loop thru all of the responses
-				  videoListOutput.push(new videoListObj(
-					  response[i].movie_id,
-					  response[i].title,
-					  response[i].link_mpeg_name,
-					  response[i].short_descrip,
-					  response[i].long_descrip
+				  logFileListOutput.push(new logFileListObj(
+					  response[i].time_of_upload_str,
+					  reponse[i].filename_str
 				  ));
 			  };
 			  //console.log(videoListOutput);
@@ -86,7 +80,7 @@ router.get('/logfiles', function(req, res, next) {
 		  }); //query for read movies  
 		});  //query to write to user log	
 	} else {
-		var actionDone = 'video list';		
+		var actionDone = 'log file list';		
 		let userLogRec = new userLogRecStoreType(
 			moment().format("YYYY-MM-DD  HH:mm a"),
 			req.session.clientIP,
