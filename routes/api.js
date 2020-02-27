@@ -145,6 +145,8 @@ router.post('/eventbytime', function(req, res, next) {
 		_durtim_utc_yr, _durtim_utc_mon, _durtim_utc_day,
 		_durtim_utc_hr, _durtim_utc_min, _durtim_utc_sec
 	);
+	//forget what got sent over, do the math here
+	_durTime_utc = _offTime_utc - _onTime_utc;
 
 	var _m1 = req.body.m1;
 	var _m2 = req.body.m2;
