@@ -118,8 +118,9 @@
 				<h3>Website Information</h3>
 				<div class="divider"></div>
 				<h4>
-					<br/>These are all of the log files that were imported.
-					A separate app takes the logfiles created and batch uploads
+					<br/>These are all of the "batched" log files that were 
+					imported. A separate Windows App takes the logfiles 
+					created and batch uploads
 					them to this database. Separate POST API's handle this.
 					Still another app, developed later takes the real time 
 					and appends it to this database real time.

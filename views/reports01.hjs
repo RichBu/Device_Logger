@@ -39,21 +39,18 @@
             <div class="row" style="padding: 20px 0px 0px 0px;" >
 				<!--Site Logo-->
                 <div class="col-xs-4">
-  			      <button id="btn-about" type="button" class="btn btn-primary leftButton" >About</button>
-                    <!-- 
-						<a href='/'><img src="/images/genielogo.png" alt='TableTop Genie Logo' id='pageLogo' class='img img-thumbnail'></a>
-					-->	
+  			      <button id="btn-back" type="button" class="btn btn-primary leftButton" >Back</button>
                 </div>
                 <div class="col-xs-4">
 					<br/>
                 </div>
                 <div class="col-xs-4">
-  			      <button id="btn-tech" type="button" class="btn btn-primary aboutButton" >Tech Info</button>
+  			      <button id="btn-tech" type="button" class="btn btn-primary aboutButton" >Help</button>
                 </div>
             </div>
             <div class="row" style="padding: 0px 0px 0px 0px;" >
-                    <h1>Device Data Logger</h1>
-                    <h3>by Rich Budek</h3>
+                    <h3>Reports</h3>
+                    <h4>for Data Logger</h4>
 			</div>
 			<hr/>
         </header>
@@ -64,16 +61,46 @@
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-8 col-xs-10 inputDivStyle">
 					<div class="row">
-						<button id="bttnLogFiles" type="" class="calcButton btn btn-primary" value="bttnLogFiles">Log Files Imported</button>
+						<input type="text" name="_startDate" id='_startDate' class="" placeholder="start date YYYY/MM/DD">	
+						<input type="text" name="_startTime" id='_startTime' class="" placeholder="start time">	
+						<input type="text" name="_endDate" id='_endDate' class="" placeholder="end date YYYY/MM/DD">	
+						<input type="text" name="_endTime" id='_endTime' class="" placeholder="end time">	
+						<input type="text" name="_startMach" id='_startMach' class="" placeholder="start dev/mach">	
+						<input type="text" name="_endMach" id='_endMach' class="" placeholder="end dev/mach">	
+					</div>
+					<div class="row">
+						<button id="bttnLogFiles" type="" class="calcButton btn btn-primary" value="bttnLogFiles">By Time</button>
 						<form id="" action="" method="post">
 						</form>
 					</div>
 					<div class="row">
-						<button id="bttnReports" type="" class="calcButton btn btn-primary" value="bttnLoggedData">Reports</button>
+						<button id="bttnLoggedData" type="" class="calcButton btn btn-primary" value="bttnLoggedData">By Machine</button>
 						<form id="" action="" method="post">
 						</form>
 					</div>
+					<div class="row">
+						<button id="bttnMachineUtilRates" type="" class="calcButton btn btn-primary" value="bttnMachineUtilRates">Machine Utilization Rates</button>
+						<form id="" action="" method="post">
+						</form>
+					</div>
+					<!--
+					<div class="row">
+						<button id="bttnCheckUpload" type="" class="calcButton btn btn-primary" value="bttnCheckUpload">Check Upload</button>
+						<input type="text" name="_fileName" id='_fileName' class="" placeholder="file name">	
+					</div>
+					-->
 					<hr/>
+					<!--
+					<h4>Advanced Reports  (require login)</h4>
+					<br/>
+					<div class="row">
+						<form id="login-form" action="/login" method="post">
+							<input type="text" name="_loginName" id='_loginName' class="" placeholder="login">	
+							<input type="password" name="_password" id='_password' class="" placeholder="password">
+							<input type="submit" class="login-submit btn btn-primary loginButton" value="Login">
+						</form>
+					</div>
+					-->
 					<div class="row">
 						<br/>
 						<br/>
@@ -116,27 +143,18 @@
 		<!-- Modal tech -->
 		<div id="modal-tech" class="modal">
 			<div class="modal-content">
-				<h3>Technical Information</h3>
+				<h3>Reports</h3>
 				<div class="divider"></div>
 				<h4>
-					<br/>Rich Budek designed website. Front end, backend, all API calls, and all mySQL 
-					commands are done by Rich Budek.
+					<br/>The data has been uploaded to the mySQL backend using either
+					a batch upload Windows Desktop App (available elsewhere), or sent
+					in realtime using still another app.
 					<br/>
-					<br/>This is a website demonstrating the use of a backend API for device data logging.
+					<br/>This is but a brief demonstration of the reporting that can be
+					generated once you get data into a backend. Enter the start date
+					using YYYY/mm/dd format, then a time if desired.  Do the same for 
+					the end date. If you leave it blank, it will default to the end.
 					<br/>
-					<br/> The original system was a networked system of devices using static IP addresses. An
-					app collects all the data and stores it into a data logging file.  The app polls all of the 
-					devices in 1 minute intervals and then records their status into a log file.
-					Another PC app written in Visual C# is used to upload this data to this backend.  However,
-					instead of uploading the data as thousands of lines of log data the app first finds all of
-					changes that happened and then creates "events". Events store the start and end times
-					for all the changes that occured.  It is this events file that is uploaded thru an API call.
-					The API calls are all done in a Node JS backend.  
-					<br/>
-					<br/>The forms do API calls to my own backend server.  In addition, to go forward to the 
-					next pages, a post path is done to prevent the user from bookmarking the individual pages.
-					This is done so that in the future, some of the pages can be moved to password protected ones
-					with little effort.  
 					<br/>
 					<br/>
 					<br/> Rich Budek  rb@RichBudek.com
@@ -208,11 +226,9 @@
 			  window.location.href = '/reports/logfiles';
 		  });
 
-		  $('#bttnReports').on('click', function (event) {
+		  $('#btn-back').on('click', function (event) {
 			  event.preventDefault();
-			  console.log("hit Log Files Button")
-			  //$("#calc-oval-form").submit();
-			  window.location.href = '/reports';
+			  window.location.href = "\\";
 		  });
 
 		  $('#bttnCheckUpload').on('click', function (event) {
@@ -221,10 +237,13 @@
 			  event.preventDefault();
 			  console.log("check upload button")
 			  //$("#calc-oval-form").submit();
+			  //window.location.href = '/reports/logfiles';
+        	  //var url = $(this).attr("action");
+			  //var url = "/api/logfile";   //local variable
 			  var url = "https://devnetlogger.herokuapp.com/api/logfile";   //AWS variable
-			  var _fileName = $('#_fileName').val();  //get JQuery data from page
+			  var _fileName = $('#_fileName').val();
         			$.post(url, {
-            			fileName: _fileName  //put all post data into JSON obj
+            			fileName: _fileName
         			}, function (data, success) {
             			window.location.href = "/";
         			});

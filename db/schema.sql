@@ -35,16 +35,37 @@ CREATE TABLE user_log (
 );
 
 
-CREATE TABLE event_log (
+CREATE TABLE event_bytime (
+    event_log_id INT NOT NULL AUTO_INCREMENT,
+    start_time_str VARCHAR(20),
+    end_time_str VARCHAR(20),
+    event_duration VARCHAR(20),
+    on_time_utc VARCHAR(15),
+    off_time_utc VARCHAR(15),
+    dur_time_utc VARCHAR(15),
+    m1 VARCHAR(3),
+    m2 VARCHAR(3),
+    m3 VARCHAR(3),
+    m4 VARCHAR(3),
+    m5 VARCHAR(3),
+    m6 VARCHAR(3),
+    m7 VARCHAR(3),
+    m8 VARCHAR(3),
+    m9 VARCHAR(3),
+    PRIMARY KEY (event_log_id)
+);
+
+
+CREATE TABLE event_bymach (
     event_log_id INT NOT NULL AUTO_INCREMENT,
     mach_num_str VARCHAR(3),
     mach_num VARCHAR(3),
     event_str VARCHAR(20),
     start_time_str VARCHAR(20),
     end_time_str VARCHAR(20),
-    event_duration VARCHAR(11),
-    on_time VARCHAR(11),
-    off_time VARCHAR(11),
+    event_duration_utc VARCHAR(15),
+    on_time_utc VARCHAR(15),
+    off_time_utc VARCHAR(15),
     PRIMARY KEY (event_log_id)
 );
 
