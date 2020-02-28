@@ -3,6 +3,7 @@
 let fs      = require('fs')
 let path    = require('path');
 let express = require('express');
+let S       = require('string');
 
 let router  = express.Router();
 
@@ -25,6 +26,25 @@ class userLogRecStoreType {
 	  this.action_string = _action_string;
 	}
   };
+
+
+  class eventByTimeRecStoreType {
+	constructor( _start_time_str, _end_time_str, _event_duration, _M1, _M2, _M3, _M4, _M5, _M6, _M7, _M8, _M9 ) {
+		this.start_time_str = _start_time_str;
+		this.end_time_str   = _end_time_str;
+		this.event_duration = _event_duration;
+		this.M1 = _M1;
+		this.M2 = _M2;
+		this.M3 = _M3;
+		this.M4 = _M4;
+		this.M5 = _M5;
+		this.M6 = _M6;
+		this.M7 = _M7; 
+		this.M8 = _M8;
+		this.M9 = _M9;
+	}
+  };
+
 
 
 router.get('/', function(req, res, next) {
@@ -137,6 +157,142 @@ router.get('/logfiles', function(req, res, next) {
 			  };
 			  //console.log(videoListOutput);
 			  res.render('logfile_list', {outputObj: logFileListOutput});
+			  //connection.end();
+		  }); //query for read logfiles  
+		});  //query to write to user log	
+	} else {
+		var actionDone = 'log file list';		
+		let userLogRec = new userLogRecStoreType(
+			moment().format("YYYY-MM-DD  HH:mm a"),
+			req.session.clientIP,
+			'timed out',
+			' ',
+			' ',
+			actionDone
+		);
+	
+		var query = "INSERT INTO user_log (time_str, ip_addr, loginName, password, fullName, action_done) VALUES (?, ?, ?, ?, ?, ? )";
+		connection.query(query, [
+		  userLogRec.timeStr,
+		  userLogRec.clientIP,
+		  userLogRec.loginName,
+		  userLogRec.password,
+		  userLogRec.fullName,
+		  userLogRec.action_done
+		  ], function (err, response) {
+			res.render('index');
+		  });
+	};
+});
+
+
+
+router.post('/evt_list', function(req, res, next) {
+	//display list of logged files
+	console.log('/reports/evt_list route');
+
+	var _startDate = S("").toString();
+	var tempStrIn = S(req.body.startDate).trim() + "*";
+	if( tempStrIn == "*") {
+		_startDate = "*";
+	} else {
+		_startDate = req.body.startDate + "/01/01";
+	};
+	var _startTime = S("").toString();
+	tempStrIn = S(req.body.startTime).trim() + "*";
+	if( tempStrIn == "*") {
+		if(_startDate == "*") {
+			//start date is already an asterisks
+			_startTime = "";
+		} else {
+			_startTime = "00:00:00";  //set to midnight
+		};
+	} else {
+		_startTime = req.body.startTime + ":00:00";
+	};
+
+	var _endDate = req.body.endDate;
+	var _endTime = req.body.endTime;
+	var _startMach = req.body.startMach;
+	var _endMach = req.body.endMach;
+
+	console.log(_startDate);
+	var searchStartStr = "";
+	if (_startDate == "*") {
+		searchStartStr = "*";
+	} else {
+		//not a wildcard
+		var tempStr = S(_startDate).left(4).toString(); 
+		var startYear = parseInt(tempStr);
+	
+		var tempStr2 = S(_startDate);
+		var startMonth = parseInt(tempStr2.substr(5,2));
+	
+		var tempStr3 = S(_startDate);
+		var startDate = parseInt(tempStr3.substr(8,2));
+	
+		var tempStr4 = S(_startTime);
+		var startHour = parseInt(tempStr4.left(2));
+		var startMin = parseInt(tempStr4.substr(3,2));
+		var startSec = parseInt(tempStr4.substr(6,2));
+		var startDate_utc = Date.UTC(startYear, startMonth, startDate, startHour, startMin, startSec);	
+		searchStartStr = S(startDate_utc).toString();
+		};
+
+	var eventByTimeListOutput = [];  //array for use in listing
+
+	//check if logged in, later feature
+	//for now, bypass
+	let noLogin = true;
+	if (noLogin || req.session.logged_in === true ) {
+		var actionDone = 'events by time';		
+		var actionString = 'events by time';
+		
+		let userLogRec = new userLogRecStoreType(
+			moment().format("YYYY-MM-DD  HH:mm a"),
+			req.session.clientIP,
+			actionDone,
+			actionString
+		);
+
+
+		var query = "INSERT INTO user_log (time_str, ip_addr, action_done, action_string) VALUES (?, ?, ?, ? )";
+		connection.query(query, [
+		  userLogRec.timeStr,
+		  userLogRec.clientIP,
+		  userLogRec.action_done,
+		  userLogRec.action_string
+		  ], function (err, response) {
+		  //log has been written, read all the events
+
+		  var queryStr = "SELECT * FROM event_bytime WHERE on_time_utc >= ?";
+	  
+		  connection.query(queryStr, [searchStartStr], function (err, response) {
+			  //all of the sessions of previous times pulled out
+			  //console.log(response);
+			  for (var i = 0; i < response.length; i++) {
+				  //loop thru all of the responses
+				  //console.log(response);
+				  //console.log(response[i]);
+				  let eventByTimeRec = new eventByTimeRecStoreType(
+					  response[i].start_time_str,
+					  response[i].end_time_str,
+					  response[i].event_duration,
+					  response[i].m1,
+					  response[i].m2,
+					  response[i].m3,
+					  response[i].m4,
+					  response[i].m5,
+					  response[i].m6,
+					  response[i].m7,
+					  response[i].m8,
+					  response[i].m9
+				  );
+
+				  eventByTimeListOutput.push(eventByTimeRec);
+			  };
+			  //console.log(videoListOutput);
+			  res.render('report_evt_list', {outputObj: eventByTimeListOutput} );
 			  //connection.end();
 		  }); //query for read logfiles  
 		});  //query to write to user log	

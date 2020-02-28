@@ -19,7 +19,7 @@ const math = require('mathjs');
 
 
 
-//put in a separate file
+//put in a separate class
 class userLogRecStoreType {
 	constructor( _timeStr, _clientIP, _action_done, _action_string ) {
 	  this.timeStr = _timeStr;
@@ -30,12 +30,13 @@ class userLogRecStoreType {
   };
 
 
+//post route to store a log file record
 router.post('/logfile', function(req, res, next) {
 	var fileNameToAdd = req.body.fileName;
 	var loginValid = 'false';
 	var outputUrl = '/';
 
-	console.log('at login post');
+	console.log('at post to store log file record');
 	console.log('add this file: ' + fileNameToAdd);
 
 	//check if logged in, later feature

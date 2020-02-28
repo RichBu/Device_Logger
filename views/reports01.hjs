@@ -61,15 +61,17 @@
 				</div>
 				<div class="col-lg-4 col-md-4 col-sm-8 col-xs-10 inputDivStyle">
 					<div class="row">
-						<input type="text" name="_startDate" id='_startDate' class="" placeholder="start date YYYY/MM/DD">	
-						<input type="text" name="_startTime" id='_startTime' class="" placeholder="start time">	
-						<input type="text" name="_endDate" id='_endDate' class="" placeholder="end date YYYY/MM/DD">	
-						<input type="text" name="_endTime" id='_endTime' class="" placeholder="end time">	
-						<input type="text" name="_startMach" id='_startMach' class="" placeholder="start dev/mach">	
-						<input type="text" name="_endMach" id='_endMach' class="" placeholder="end dev/mach">	
+						<form id="input-form" role="form" action="/reports/evt_list" method="post">
+						<input type="text" name="startDate" id='startDate' class="" placeholder="start date YYYY/MM/DD">	
+						<input type="text" name="startTime" id='startTime' class="" placeholder="start time">	
+						<input type="text" name="endDate" id='endDate' class="" placeholder="end date YYYY/MM/DD">	
+						<input type="text" name="endTime" id='endTime' class="" placeholder="end time">	
+						<input type="text" name="startMach" id='startMach' class="" placeholder="start dev/mach">	
+						<input type="text" name="endMach" id='endMach' class="" placeholder="end dev/mach">	
+						</form>
 					</div>
 					<div class="row">
-						<button id="bttnLogFiles" type="" class="calcButton btn btn-primary" value="bttnLogFiles">By Time</button>
+						<button id="bttnByTime" type="" class="calcButton btn btn-primary" value="bttnByTime">By Time</button>
 						<form id="" action="" method="post">
 						</form>
 					</div>
@@ -207,23 +209,21 @@
 			  $(modAbout).css("display", "block");
 		  });
 
-		  $('#btn-login').on('click', function (event) {
-			  event.preventDefault();
-			  var modAbout = $("#modal-about");
-			  $(modAbout).css("display", "block");
-		  });
-
 		  $('#btn-exit').on('click', function (event) {
 			  event.preventDefault();
 			  window.location.href = "http://www.msn.com";
 		  });
 
 
-		  $('#bttnLogFiles').on('click', function (event) {
+		  $('#bttnByTime').on('click', function (event) {
 			  event.preventDefault();
-			  console.log("hit Log Files Button")
+			  console.log("hit By Time Button")
+			  //window.location.href = '/reports/evt_list';
 			  //$("#calc-oval-form").submit();
-			  window.location.href = '/reports/logfiles';
+			  //var url = "https://devnetlogger.herokuapp.com/reports/evt_list";   //AWS variable
+			  var url = "reports/evt_list";
+			  var _fileName = $('#_fileName').val();  //get JQuery data from page
+			  $('#input-form').submit();
 		  });
 
 		  $('#btn-back').on('click', function (event) {
