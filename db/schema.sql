@@ -63,6 +63,8 @@ CREATE TABLE event_bymach (
     event_str VARCHAR(20),
     start_time_str VARCHAR(20),
     end_time_str VARCHAR(20),
+    start_time_utc VARCHAR(15),
+    end_time_utc VARCHAR(15),
     event_duration_utc VARCHAR(15),
     on_time_utc VARCHAR(15),
     off_time_utc VARCHAR(15),

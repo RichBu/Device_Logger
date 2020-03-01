@@ -12,6 +12,8 @@ var connection = require('../connection');
 
 let fileLoc = './public/videos/';
 
+let S       = require('string');
+
 const moment = require("moment");
 const momentDurationFormatSetup = require("moment-duration-format");
 const numeral = require("numeral");
@@ -209,6 +211,130 @@ router.post('/eventbytime', function(req, res, next) {
 		});  //query to write to user log	
 	} else {
 		var actionDone = 'api-post event by time';		
+		var actionString = 'tried to add but timed out';
+		
+		let userLogRec = new userLogRecStoreType(
+			moment().format("YYYY-MM-DD  HH:mm a"),
+			req.session.clientIP,
+			actionDone,
+			actionString
+		);
+	
+		var query = "INSERT INTO user_log (time_str, ip_addr, action_done, action_string) VALUES (?, ?, ?, ? )";
+		connection.query(query, [
+		  userLogRec.timeStr,
+		  userLogRec.clientIP,
+		  userLogRec.action_done,
+		  userLogRec.action_string
+		  ], function (err, response) {
+			res.render('index');
+		  });
+	};
+});
+
+
+
+//post to the events by machine
+//need to send in utc pieces so Node JS can assemble UTC easily
+router.post('/eventbymach', function(req, res, next) {
+	console.log('at API event by machine');
+	console.log('add this time: ' + req.body.startTimeStr);
+
+	var _machNumStr = req.body.machNumStr;
+	var _machNum = req.body.machNum;
+	var _eventStr = req.body.eventStr;
+
+	var _startTimeStr = req.body.startTimeStr;
+	var _starttime_utc_yr = req.body.starttime_utc_yr;
+	var _starttime_utc_mon = req.body.starttime_utc_mon;
+	var _starttime_utc_day = req.body.starttime_utc_day;
+	var _starttime_utc_hr = req.body.starttime_utc_hr;
+	var _starttime_utc_min = req.body.starttime_utc_min;
+	var _starttime_utc_sec = req.body.starttime_utc_sec;
+	var _startTime_utc = Date.UTC(
+		_starttime_utc_yr, _starttime_utc_mon, _starttime_utc_day,
+		_starttime_utc_hr, _starttime_utc_min, _starttime_utc_sec
+	);
+
+	var _endTimeStr = req.body.endTimeStr;
+	var _endtime_utc_yr = req.body.endtime_utc_yr;
+	var _endtime_utc_mon = req.body.endtime_utc_mon;
+	var _endtime_utc_day = req.body.endtime_utc_day;
+	var _endtime_utc_hr = req.body.endtime_utc_hr;
+	var _endtime_utc_min = req.body.endtime_utc_min;
+	var _endtime_utc_sec = req.body.endtime_utc_sec;
+	var _endTime_utc = Date.UTC(
+		_endtime_utc_yr, _endtime_utc_mon, _endtime_utc_day,
+		_endtime_utc_hr, _endtime_utc_min, _endtime_utc_sec
+	);
+
+	var testStr = "";	
+	testStr = _eventStr;
+	var _eventDuration_utc = _endTime_utc - _startTime_utc;
+	var _onTime_utc = 0;  //need to set from duration
+	var _offTime_utc = 0; //need to set from duration
+	if (testStr.includes("off")) {
+		//if there is "off" in the event string then it means machine 
+		//was turned off, so it was on during the duration
+		_onTime_utc = _eventDuration_utc;
+	}  else {
+		//must be off time
+		_offTime_utc = _eventDuration_utc;
+	};
+
+	var loginValid = 'false';
+	var outputUrl = '/';
+
+	//check if logged in, later feature
+	//for now, bypass
+	let noLogin = true;
+	if (noLogin || req.session.logged_in === true ) {
+		var actionDone = 'api-post event by time';		
+		var actionString = 'add an event by time';
+		
+		let userLogRec = new userLogRecStoreType(
+			moment().format("YYYY-MM-DD  HH:mm a"),
+			req.session.clientIP,
+			actionDone,
+			actionString
+		);
+
+		var query = "INSERT INTO user_log (time_str, ip_addr, action_done, action_string) VALUES (?, ?, ?, ? )";
+		connection.query(query, [
+		  userLogRec.timeStr,
+		  userLogRec.clientIP,
+		  userLogRec.action_done,
+		  userLogRec.action_string
+		  ], function (err, response) {
+		  //log has been written, now write to the log file table	  
+		  var query = "INSERT INTO event_bymach (mach_num_str, mach_num, event_str, start_time_str, end_time_str, start_time_utc, end_time_utc,  event_duration_utc, on_time_utc, off_time_utc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		  connection.query(query, [
+			_machNumStr,
+			_machNum,
+			_eventStr,		
+			_startTimeStr,
+			_endTimeStr,
+			_startTime_utc,
+			_endTime_utc,
+			_eventDuration_utc,
+			_onTime_utc,
+			_offTime_utc
+			], function (err, response) {
+			  //should check if there is an error
+			  //return the proper code
+			  if (err) {
+				  console.log("error at api ...");
+				  console.log(err);
+			  } else {
+				res.status(201).send();  //201 means record has been created
+			  }
+		
+			  //res.render('logfile_list', {outputObj: logFileListOutput});
+		  }); //query to write to event by time 
+		});  //query to write to user log	
+	} else {
+		var actionDone = 'api-post event by machine';		
 		var actionString = 'tried to add but timed out';
 		
 		let userLogRec = new userLogRecStoreType(

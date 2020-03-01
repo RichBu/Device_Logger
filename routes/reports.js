@@ -211,15 +211,35 @@ router.post('/evt_list', function(req, res, next) {
 		_startTime = req.body.startTime + ":00:00";
 	};
 
-	var _endDate = req.body.endDate;
-	var _endTime = req.body.endTime;
+
+
+	var _endDate = S("").toString();
+	var tempStrIn2 = S(req.body.endDate).trim() + "*";
+	if( tempStrIn2 == "*") {
+		_endDate = "*";
+	} else {
+		_endDate = req.body.endDate + "/01/01";
+	};
+	var _endTime = S("").toString();
+	tempStrIn2 = S(req.body.endTime).trim() + "*";
+	if( tempStrIn2 == "*") {
+		if(_endDate == "*") {
+			//start date is already an asterisks
+			_endTime = "";
+		} else {
+			_endTime = "00:00:00";  //set to midnight
+		};
+	} else {
+		_endTime = req.body.endTime + ":00:00";
+	};
+
 	var _startMach = req.body.startMach;
 	var _endMach = req.body.endMach;
 
-	console.log(_startDate);
+	//find the start string, either a wild card or the start UTC
 	var searchStartStr = "";
 	if (_startDate == "*") {
-		searchStartStr = "*";
+		searchStartStr = "0";   //if it is a wild card then search from utc=0
 	} else {
 		//not a wildcard
 		var tempStr = S(_startDate).left(4).toString(); 
@@ -239,7 +259,34 @@ router.post('/evt_list', function(req, res, next) {
 		searchStartStr = S(startDate_utc).toString();
 		};
 
+		//find the end date string
+		var searchEndStr = "";
+		if (_endDate == "*") {
+			var endDate_utc = Date.UTC(3000, 12, 31, 0, 0, 0);	
+			searchEndStr = S(endDate_utc).toString();
+		} else {
+			//not a wildcard
+			var tempStr = S(_endDate).left(4).toString(); 
+			var endYear = parseInt(tempStr);
+		
+			var tempStr2 = S(_endDate);
+			var endMonth = parseInt(tempStr2.substr(5,2));
+		
+			var tempStr3 = S(_endDate);
+			var endDate = parseInt(tempStr3.substr(8,2));
+		
+			var tempStr4 = S(_endTime);
+			var endHour = parseInt(tempStr4.left(2));
+			var endMin = parseInt(tempStr4.substr(3,2));
+			var endSec = parseInt(tempStr4.substr(6,2));
+			var endDate_utc = Date.UTC(endYear, endMonth, endDate, endHour, endMin, endSec);	
+			searchEndStr = S(endDate_utc).toString();
+			};
+	
 	var eventByTimeListOutput = [];  //array for use in listing
+
+	console.log("start = " + searchStartStr);
+	console.log("end = "   + searchEndStr);
 
 	//check if logged in, later feature
 	//for now, bypass
@@ -265,9 +312,9 @@ router.post('/evt_list', function(req, res, next) {
 		  ], function (err, response) {
 		  //log has been written, read all the events
 
-		  var queryStr = "SELECT * FROM event_bytime WHERE on_time_utc >= ?";
+		  var queryStr = "SELECT * FROM event_bytime WHERE on_time_utc >= ? AND on_time_utc <= ?";
 	  
-		  connection.query(queryStr, [searchStartStr], function (err, response) {
+		  connection.query(queryStr, [searchStartStr, searchEndStr], function (err, response) {
 			  //all of the sessions of previous times pulled out
 			  //console.log(response);
 			  for (var i = 0; i < response.length; i++) {
