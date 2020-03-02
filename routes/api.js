@@ -276,10 +276,10 @@ router.post('/eventbymach', function(req, res, next) {
 	if (testStr.includes("off")) {
 		//if there is "off" in the event string then it means machine 
 		//was turned off, so it was on during the duration
-		_onTime_utc = _eventDuration_utc;
+		_offTime_utc = _eventDuration_utc;
 	}  else {
 		//must be off time
-		_offTime_utc = _eventDuration_utc;
+		_onTime_utc = _eventDuration_utc;
 	};
 
 	var loginValid = 'false';
