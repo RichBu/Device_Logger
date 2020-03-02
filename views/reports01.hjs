@@ -76,7 +76,7 @@
 						</form>
 					</div>
 					<div class="row">
-						<button id="bttnLoggedData" type="" class="calcButton btn btn-primary" value="bttnLoggedData">By Machine</button>
+						<button id="bttnByMach" type="" class="calcButton btn btn-primary" value="bttnByMach">By Machine</button>
 						<form id="" action="" method="post">
 						</form>
 					</div>
@@ -225,6 +225,21 @@
 			  var _fileName = $('#_fileName').val();  //get JQuery data from page
 			  $('#input-form').submit();
 		  });
+
+
+		  $('#bttnByMach').on('click', function (event) {
+			  event.preventDefault();
+			  console.log("hit By Machine Button")
+			  //window.location.href = '/reports/evt_list';
+			  //$("#calc-oval-form").submit();
+			  //var url = "https://devnetlogger.herokuapp.com/reports/evt_list";   //AWS variable
+			  var url = "reports/evm_list";
+			  var _fileName = $('#_fileName').val();  //get JQuery data from page
+			  //action="/reports/evt_list"
+			  $('#input-form').attr('action', '/reports/evm_list');
+			  $('#input-form').submit();
+		  });
+
 
 		  $('#btn-back').on('click', function (event) {
 			  event.preventDefault();
