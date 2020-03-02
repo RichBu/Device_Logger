@@ -371,7 +371,7 @@ router.post('/evt_list', function(req, res, next) {
 
 
 class eventByMachRecStoreType {
-	constructor( _event_str, _start_time_str, _end_time_str, _event_duration_utc, on_time_utc, off_time_utc ) {
+	constructor( _event_str, _start_time_str, _end_time_str, _event_duration_utc, _on_time_utc, _off_time_utc ) {
 		this.event_str = _event_str;
 		this.start_time_str = _start_time_str;
 		this.end_time_str   = _end_time_str;
@@ -506,8 +506,7 @@ router.post('/evm_list', function(req, res, next) {
 		  ], function (err, response) {
 		  //log has been written, read all the events
 
-		  var queryStr = "SELECT * FROM event_bymach WHERE on_time_utc >= ? AND on_time_utc <= ?";
-	  
+		  var queryStr = "SELECT * FROM event_bymach WHERE start_time_utc >= ? AND start_time_utc <= ?";
 		  connection.query(queryStr, [searchStartStr, searchEndStr], function (err, response) {
 			  //all of the sessions of previous times pulled out
 			  //console.log(response);
