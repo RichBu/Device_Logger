@@ -509,28 +509,111 @@ router.post('/evm_list', function(req, res, next) {
 		  var queryStr = "SELECT * FROM event_bymach WHERE start_time_utc >= ? AND start_time_utc <= ?";
 		  connection.query(queryStr, [searchStartStr, searchEndStr], function (err, response) {
 			  //all of the sessions of previous times pulled out
-			  //console.log(response);
+			  let currMach = 0;
+			  let currOnTim = 0.0;
+			  let currOffTim = 0.0;
+			  let currTotTim = 0.0;  //total time
+			  let currOnPer = 0.0;
+			  let currOffPer = 0.0;
+
+			  if (response.length>0){
+			 	//might want to put into a class to keep it together
+			  	currMach = parseInt(response[0].mach_num);    //cur mach
+			  };
+
 			  for (var i = 0; i < response.length; i++) {
-				  //loop thru all of the responses
-				  //console.log(response);
-				  //console.log(response[i]);
+				  //loop thru all of the response
 				  let dur_hr = 0;
 				  dur_hr = response[i].event_duration_utc/1000/60/60;  //convert to hours 
 				  let on_hr = 0;
 				  on_hr = response[i].on_time_utc/1000/60/60;
 				  let off_hr = 0;
 				  off_hr = response[i].off_time_utc/1000/60/60;
-				  let eventByMachRec = new eventByMachRecStoreType(
-					  response[i].event_str,
-					  response[i].start_time_str,
-					  response[i].end_time_str,
-					  dur_hr,
-					  on_hr,
-					  off_hr
-				  );
 
-				  eventByMachListOutput.push(eventByMachRec);
-			  };
+				  //calculate the percentages
+				  let respMachNum = parseInt(response[i].mach_num);
+				  if ((respMachNum == currMach) && (i < (response.length-1))) {
+					  //mach number has not changed
+					  currOnTim = currOnTim + on_hr;
+					  currOffTim = currOffTim + off_hr;
+					  currTotTim = currTotTim + dur_hr;
+				  } else {
+					  //mach number changed or the last record
+					  if (i == (response.length-1)){
+						//store the last record
+						//make it a different variable then the rest
+						let eventByMachRec2 = new eventByMachRecStoreType(
+							response[i].event_str,
+							response[i].start_time_str,
+							response[i].end_time_str,
+							dur_hr.toFixed(3),
+							on_hr.toFixed(3),
+							off_hr.toFixed(3)
+						  );
+						eventByMachListOutput.push(eventByMachRec2);
+						};
+					  let eventByMachRec = new eventByMachRecStoreType(
+						"totals",
+						" ",
+						" ",
+						currTotTim.toFixed(3),
+						currOnTim.toFixed(3),
+						currOffTim.toFixed(3)
+					  );
+					  eventByMachListOutput.push(eventByMachRec); //store the totals	  
+					  let currZero = 0;
+			  
+					  if (currOnTim == 0) {
+						  currOnPer = 0;
+		 			  } else {
+						currOnPer = (currOnTim/currTotTim) * 100.0;
+					  };
+					  if (currOffTim == 0) {
+						currOffPer = 0;
+					  } else {
+						currOffPer = (currOffTim/currTotTim) * 100.0;
+					  };
+					  
+					  eventByMachRec = new eventByMachRecStoreType(
+						"percentages",
+						" ",
+						" ",
+						//currZero.toFixed(1),
+						" ",
+						currOnPer.toFixed(2),
+						currOffPer.toFixed(2)
+					  );
+					  
+					  eventByMachListOutput.push(eventByMachRec); //store the totals
+
+					  eventByMachRec = new eventByMachRecStoreType(
+						" ",
+						" ",
+						" ",
+						" ",
+						" ",
+						" "
+					  );
+					  eventByMachListOutput.push(eventByMachRec); //store the totals
+				  
+					  currMach =  parseInt(response[i].mach_num);
+					  currTotTim = dur_hr;
+					  currOnTim = on_hr;
+					  currOffTim = off_hr;
+				  };
+				  if (i != (response.length-1)){
+					//store record except if it is the last one
+					let eventByMachRec = new eventByMachRecStoreType(
+						response[i].event_str,
+						response[i].start_time_str,
+						response[i].end_time_str,
+						dur_hr.toFixed(3),
+						on_hr.toFixed(3),
+						off_hr.toFixed(3)
+					  );
+					eventByMachListOutput.push(eventByMachRec);
+					};
+			  	};
 			  //console.log(videoListOutput);
 			  res.render('report_evm_list', {outputObj: eventByMachListOutput} );
 			  //connection.end();
