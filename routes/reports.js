@@ -648,10 +648,36 @@ router.post('/evm_list', function(req, res, next) {
 
 
 
+class MachUtilRecType {
+	constructor( _machOnHours, _machOffHours, _machPerUsage, 
+		_totHours, _totPerUtil, _workHours, _workPer) {
+		this.machOnHours = _machOnHours;
+		this.machOffHours = _machOffHours;
+		this.machPerUsage = _machPerUsage;
+		this.totHours = _totHours;
+		this.totPerUtil = _totPerUtil;
+		this.workHours = _workHours;
+		this.workPer = _workPer;
+	}
+  };
+
 
 router.post('/mach_util', function(req, res, next) {
 	//machine utilization report
-	console.log('/reports/evm_list route');
+	console.log('/reports/mach_util route');
+	//track
+	//total on-time, total off time, 
+	//tot avail hours, tot work hours
+	//num mach, num active mach, 
+
+	let numMach = 9; //number of machines, later depending on input change it
+	let  machUtilTable = [];
+
+	//fill the table with 0's before starting
+	for (i=0; i<numMach; i++) {
+		let machUtilRec = new MachUtilRecType(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		machUtilTable.push(machUtilRec);
+	};
 
 	var _startDate = S("").toString();
 	var tempStrIn = S(req.body.startDate).trim() + "*";
@@ -746,14 +772,11 @@ router.post('/mach_util', function(req, res, next) {
 	
 	var eventByMachListOutput = [];  //array for use in listing
 
-	console.log("start = " + searchStartStr);
-	console.log("end = "   + searchEndStr);
-
 	//check if logged in, later feature
 	//for now, bypass
 	let noLogin = true;
 	if (noLogin || req.session.logged_in === true ) {
-		var actionDone = 'events by mach';		
+		var actionDone = 'mach utilization';		
 		var actionString = 'events by mach';
 		
 		let userLogRec = new userLogRecStoreType(
@@ -790,15 +813,37 @@ router.post('/mach_util', function(req, res, next) {
 
 			  for (var i = 0; i < response.length; i++) {
 				  //loop thru all of the response
+				  //add it to the MachUtilTable
+				  let respMachNum = parseInt(response[i].mach_num);
+
 				  let dur_hr = 0;
 				  dur_hr = response[i].event_duration_utc/1000/60/60;  //convert to hours 
 				  let on_hr = 0;
 				  on_hr = response[i].on_time_utc/1000/60/60;
 				  let off_hr = 0;
 				  off_hr = response[i].off_time_utc/1000/60/60;
+				  machUtilTable[respMachNum-1].machOnHours = machUtilTable[respMachNum-1].machOnHours + on_hr;
+				  machUtilTable[respMachNum-1].machOffHours = machUtilTable[respMachNum-1].machOffHours + off_hr;
+			  };
 
+			  let totAvailHrs = endDate_utc - startDate_utc;
+			  //different than other report, can calculate pecentages when done
+			  for (var i=0; i<numMach; i++){
+				machUtilTable[i].totHours = totAvailHrs;
+				if (machUtilTable[i].machOnHours == 0){
+					machUtilTable[i].machPerUsage = 0;
+					machUtilTable[i].totPerUtil = 0.0;
+				} else {
+					if (machUtilTable[i].machOffHours == 0){
+						machUtilTable[i].machPerUsage = 100.0;
+						machUtilTable[i].totPerUtil = 100.0;
+					} else {
+						machUtilTable[i].machPerUsage = machUtilTable[i].machOnHours /  machUtilTable[i].machOnHours * 100.0;
+						machUtilTable[i].totPerUtil = machUtilTable[i].machOnHours /  machUtilTable[i].totHours * 100.0;
+					};   
+				};
+			  };
 				  //calculate the percentages
-				  let respMachNum = parseInt(response[i].mach_num);
 				  if ((respMachNum == currMach) && (i < (response.length-1))) {
 					  //mach number has not changed
 					  currOnTim = currOnTim + on_hr;
@@ -808,6 +853,15 @@ router.post('/mach_util', function(req, res, next) {
 					  //mach number changed or the last record
 					  if (i == (response.length-1)){
 						//store the last record
+						if (machUtilTable[respMachNum-1].machOnHours == 0){
+							machUtilTable[respMachNum-1].machPerUsage = 0;
+						} else {
+							if (machUtilTable[respMachNum-1].machOffHours == 0)
+							  machUtilTable[respMachNum-1].machPerUsage = 100;
+							else   
+							  machUtilTable[respMachNum-1].machPerUsage = machUtilTable[respMachNum-1].machOnHours /  machUtilTable[respMachNum-1].machOnHours * 100.0;
+						};
+
 						//make it a different variable then the rest
 						let eventByMachRec2 = new eventByMachRecStoreType(
 							response[i].event_str,
@@ -880,7 +934,7 @@ router.post('/mach_util', function(req, res, next) {
 					  );
 					eventByMachListOutput.push(eventByMachRec);
 					};
-			  	};
+		
 			  //console.log(videoListOutput);
 			  res.render('report_evm_list', {outputObj: eventByMachListOutput} );
 			  //connection.end();
