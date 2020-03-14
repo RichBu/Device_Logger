@@ -81,7 +81,7 @@
 						</form>
 					</div>
 					<div class="row">
-						<button id="bttnMachineUtilRates" type="" class="calcButton btn btn-primary" value="bttnMachineUtilRates">Machine Utilization Rates</button>
+						<button id="bttnMachUtil" type="" class="calcButton btn btn-primary" value="bttnMachUtil">Machine Utilization Rates</button>
 						<form id="" action="" method="post">
 						</form>
 					</div>
@@ -237,6 +237,19 @@
 			  var _fileName = $('#_fileName').val();  //get JQuery data from page
 			  //action="/reports/evt_list"
 			  $('#input-form').attr('action', '/reports/evm_list');
+			  $('#input-form').submit();
+		  });
+
+		  $('#bttnMachUtil').on('click', function (event) {
+			  event.preventDefault();
+			  console.log("hit mach utilization")
+			  //window.location.href = '/reports/evt_list';
+			  //$("#calc-oval-form").submit();
+			  //var url = "https://devnetlogger.herokuapp.com/reports/evt_list";   //AWS variable
+			  var url = "reports/mach_util";
+			  var _fileName = $('#_fileName').val();  //get JQuery data from page
+			  //action="/reports/evt_list"
+			  $('#input-form').attr('action', '/reports/mach_util');
 			  $('#input-form').submit();
 		  });
 
