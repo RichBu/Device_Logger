@@ -692,6 +692,7 @@ router.post('/mach_util', function(req, res, next) {
 	//track
 	//total on-time, total off time, 
 	//tot avail hours, tot work hours
+	//also department hours
 	//num mach, num active mach, 
 
 	let numMach = 9; //number of machines, later depending on input change it
@@ -776,8 +777,9 @@ router.post('/mach_util', function(req, res, next) {
 		startDate_utc = Date.UTC(startYear, startMonth, startDate, startHour, startMin, startSec);	
 		//startDate_str = moment().unix(startDate_utc);
 
-		startDate_str = padZero(startYear, 2) + "/" + padZero(startMonth, 2) + "/" + padZero(startDate, 2);	
-		reportStartDate_unix = moment(startDate_str, "YYYY/MM/DD").unix();
+		startDate_str = padZero(startYear, 2) + "/" + padZero(startMonth, 2) + "/" + padZero(startDate, 2) +
+		  " " + padZero(startHour,2) + ":" + padZero(startMin,2) + ":" + padZero(startSec,2);	
+		reportStartDate_unix = moment(startDate_str, "YYYY/MM/DD HH:mm:SS").unix();
 
 		searchStartDate_unix = moment().unix(startDate_utc);
 		searchStartStr = S(startDate_utc).toString();
@@ -810,9 +812,11 @@ router.post('/mach_util', function(req, res, next) {
 		var endHour = parseInt(tempStr4.left(2));
 		var endMin = parseInt(tempStr4.substr(3,2));
 		var endSec = parseInt(tempStr4.substr(6,2));
+console.log("end time = " + _endTime);		
 		endDate_utc = Date.UTC(endYear, endMonth, endDate, endHour, endMin, endSec);
-		endDate_str = padZero(endYear, 2) + "/" + padZero(endMonth, 2) + "/" + padZero(endDate, 2);	
-		reportEndDate_unix = moment(endDate_str, "YYYY/MM/DD").unix();
+		endDate_str = padZero(endYear, 2) + "/" + padZero(endMonth, 2) + "/" + padZero(endDate, 2) + 
+		  " " + padZero(endHour,2) + ":" + padZero(endMin,2) + ":" + padZero(endSec,2);	
+		reportEndDate_unix = moment(endDate_str, "YYYY/MM/DD HH:mm:SS").unix();
 
 		searchEndDate_unix = moment.unix(endDate_utc);
 		searchEndStr = S(endDate_utc).toString();
@@ -855,6 +859,8 @@ router.post('/mach_util', function(req, res, next) {
 				endDate_utc = response[response.length-1].end_time_utc;
 				};
 
+			  let deptTotOnHrs = 0;
+			  let deptTotOffHrs = 0;
 			  var tempDate = moment("01/01/2300","MM/DD/YYYY");
 			  reportStartDate_unix = moment("01/01/2300","MM/DD/YYYY").unix();	
 			  reportEndDate_unix = 0;	
@@ -873,8 +879,11 @@ router.post('/mach_util', function(req, res, next) {
 				  dur_hr = response[i].event_duration_utc/1000/60/60;  //convert to hours 
 				  let on_hr = 0;
 				  on_hr = response[i].on_time_utc/1000/60/60;
+				  deptTotOnHrs = deptTotOnHrs + on_hr;
+
 				  let off_hr = 0;
 				  off_hr = response[i].off_time_utc/1000/60/60;
+				  deptTotOffHrs = deptTotOffHrs + off_hr;
 				  machUtilTable[respMachNum-1].machOnHours = machUtilTable[respMachNum-1].machOnHours + on_hr;
 				  machUtilTable[respMachNum-1].machOffHours = machUtilTable[respMachNum-1].machOffHours + off_hr;
 			  };
@@ -886,6 +895,7 @@ router.post('/mach_util', function(req, res, next) {
 			  reportEndDate_str = moment.unix(reportEndDate_unix).format("MM/DD/YYYY HH:mm:ss");
 
 			  totAvailHrs = totAvailHrs/60/60;  //convert sec to hours
+			  let deptTotAvailHrs = totAvailHrs * numMach;
 			  var day = moment.unix(reportStartDate_unix);
 			  var endDate = moment.unix(reportEndDate_unix);
 			  var businessDays = 0;
@@ -896,6 +906,7 @@ router.post('/mach_util', function(req, res, next) {
 				}
 				
 			  let prodHours = businessDays * 24.0;
+			  let deptProdHours = prodHours * numMach; 
 
 			  //different than other report, can calculate pecentages when done
 			  for (var i=0; i<numMach; i++){
@@ -1038,7 +1049,7 @@ router.post('/mach_util', function(req, res, next) {
 			  machUtilOutput.push(machUtilOutputRec);
 
 			  machUtilOutputRec = new MachUtilOutputType(
-				"% of total hours",
+				"% usage of total",
 				machUtilTable[0].totPerUtil.toFixed(1)+"%",
 				machUtilTable[1].totPerUtil.toFixed(1)+"%",
 				machUtilTable[2].totPerUtil.toFixed(1)+"%",
@@ -1048,6 +1059,20 @@ router.post('/mach_util', function(req, res, next) {
 				machUtilTable[6].totPerUtil.toFixed(1)+"%",
 				machUtilTable[7].totPerUtil.toFixed(1)+"%",
 				machUtilTable[8].totPerUtil.toFixed(1)+"%"
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  machUtilOutputRec = new MachUtilOutputType(
+				"% idle of total",
+				(100.0 - machUtilTable[0].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[1].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[2].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[3].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[4].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[5].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[6].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[7].totPerUtil).toFixed(1)+"%",
+				(100.0 - machUtilTable[8].totPerUtil).toFixed(1)+"%"
 			  );
 			  machUtilOutput.push(machUtilOutputRec);
 
@@ -1096,7 +1121,7 @@ router.post('/mach_util', function(req, res, next) {
 			  machUtilOutput.push(machUtilOutputRec);
 
 			  machUtilOutputRec = new MachUtilOutputType(
-				"% of workday hours",
+				"% usage of workdays",
 				machUtilTable[0].workPer.toFixed(1)+"%",
 				machUtilTable[1].workPer.toFixed(1)+"%",
 				machUtilTable[2].workPer.toFixed(1)+"%",
@@ -1106,6 +1131,241 @@ router.post('/mach_util', function(req, res, next) {
 				machUtilTable[6].workPer.toFixed(1)+"%",
 				machUtilTable[7].workPer.toFixed(1)+"%",
 				machUtilTable[8].workPer.toFixed(1)+"%"
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  machUtilOutputRec = new MachUtilOutputType(
+				"% idle of workdays",
+				(100.0-machUtilTable[0].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[1].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[2].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[3].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[4].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[5].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[6].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[7].workPer).toFixed(1)+"%",
+				(100.0-machUtilTable[8].workPer).toFixed(1)+"%"
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+
+			  //insert blank
+			  machUtilOutputRec = new MachUtilOutputType(
+				"_____________________",
+				"______",
+				"______",
+				"______",
+				"______",
+				"______",
+				"______",
+				"______",
+				"______",
+				"______"
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+
+			  //insert blank
+			  machUtilOutputRec = new MachUtilOutputType(
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  //insert separator
+			  machUtilOutputRec = new MachUtilOutputType(
+				"Department (all mach)",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"number of machines",
+				numMach,
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  //insert blank
+			  machUtilOutputRec = new MachUtilOutputType(
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"total hours",
+				deptTotAvailHrs.toFixed(2),
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"usage hours",
+				deptTotOnHrs.toFixed(2),
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  let deptOnPer = deptTotOnHrs / deptTotAvailHrs * 100.0;
+			  machUtilOutputRec = new MachUtilOutputType(
+				"percent usage",
+				deptOnPer.toFixed(1) + "%",
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"idle hours",
+				deptTotOffHrs.toFixed(2),
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  let deptOffPer = deptTotOffHrs / deptTotAvailHrs * 100.0;
+			  machUtilOutputRec = new MachUtilOutputType(
+				"percent idle",
+				deptOffPer.toFixed(1) + "%",
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  //insert blank
+			  machUtilOutputRec = new MachUtilOutputType(
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"workday (mon-fri)",
+				" ",
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"total workday hrs",
+				deptProdHours.toFixed(2),
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  let deptProdOnPer = deptTotOnHrs / deptProdHours * 100.0;
+			  let deptProdOffPer = deptTotOffHrs / deptProdHours * 100.0;
+			  machUtilOutputRec = new MachUtilOutputType(
+				"% workday usage",
+				deptProdOnPer.toFixed(1)+"%",
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
+			  machUtilOutputRec = new MachUtilOutputType(
+				"% workday idle",
+				deptProdOffPer.toFixed(1) + "%",
+				" ", 
+				" ", 
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
 			  );
 			  machUtilOutput.push(machUtilOutputRec);
 		
