@@ -56,6 +56,9 @@
             </div>
             <div class="row" style="padding: 20px 0px 0px 0px;" >
                 <h2>Machine Utilization Rates</h2>
+				<br/>
+				<h4>input range: {{searchStartDate}} &nbsp; &nbsp; to &nbsp; &nbsp; {{searchEndDate}}</h4>
+				<h4>report range: {{reportStartDate}} &nbsp; &nbsp; to &nbsp; &nbsp; {{reportEndDate}}</h4>
             </div>
 			<hr/>
         </header>

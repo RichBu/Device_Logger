@@ -85,24 +85,7 @@
 						<form id="" action="" method="post">
 						</form>
 					</div>
-					<!--
-					<div class="row">
-						<button id="bttnCheckUpload" type="" class="calcButton btn btn-primary" value="bttnCheckUpload">Check Upload</button>
-						<input type="text" name="_fileName" id='_fileName' class="" placeholder="file name">	
-					</div>
-					-->
 					<hr/>
-					<!--
-					<h4>Advanced Reports  (require login)</h4>
-					<br/>
-					<div class="row">
-						<form id="login-form" action="/login" method="post">
-							<input type="text" name="_loginName" id='_loginName' class="" placeholder="login">	
-							<input type="password" name="_password" id='_password' class="" placeholder="password">
-							<input type="submit" class="login-submit btn btn-primary loginButton" value="Login">
-						</form>
-					</div>
-					-->
 					<div class="row">
 						<br/>
 						<br/>
@@ -230,9 +213,7 @@
 		  $('#bttnByMach').on('click', function (event) {
 			  event.preventDefault();
 			  console.log("hit By Machine Button")
-			  //window.location.href = '/reports/evt_list';
-			  //$("#calc-oval-form").submit();
-			  //var url = "https://devnetlogger.herokuapp.com/reports/evt_list";   //AWS variable
+			  //var url = "https://devnetlogger.herokuapp.com/reports/evm_list";   //AWS variable
 			  var url = "reports/evm_list";
 			  var _fileName = $('#_fileName').val();  //get JQuery data from page
 			  //action="/reports/evt_list"
@@ -243,9 +224,7 @@
 		  $('#bttnMachUtil').on('click', function (event) {
 			  event.preventDefault();
 			  console.log("hit mach utilization")
-			  //window.location.href = '/reports/evt_list';
-			  //$("#calc-oval-form").submit();
-			  //var url = "https://devnetlogger.herokuapp.com/reports/evt_list";   //AWS variable
+			  //var url = "https://devnetlogger.herokuapp.com/reports/mach_util";   //AWS variable
 			  var url = "reports/mach_util";
 			  var _fileName = $('#_fileName').val();  //get JQuery data from page
 			  //action="/reports/evt_list"
@@ -264,10 +243,6 @@
 			  //route
 			  event.preventDefault();
 			  console.log("check upload button")
-			  //$("#calc-oval-form").submit();
-			  //window.location.href = '/reports/logfiles';
-        	  //var url = $(this).attr("action");
-			  //var url = "/api/logfile";   //local variable
 			  var url = "https://devnetlogger.herokuapp.com/api/logfile";   //AWS variable
 			  var _fileName = $('#_fileName').val();
         			$.post(url, {
@@ -277,7 +252,7 @@
         			});
 		  });
 
-    		$(document.body).on("submit", "#login-form", function (event) {
+    	  $(document.body).on("submit", "#login-form", function (event) {
         		event.preventDefault();
         		var url = $(this).attr("action");
 				var _loginName = $('#_loginName').val();
@@ -290,7 +265,7 @@
 						//can not redirect inside of a $.post command
             			window.location.href = data.url;
         			});
-    		});  //end of post
+    	  });  //end of post
   	    });
 		</script>
 	</body>

@@ -678,6 +678,14 @@ class MachUtilRecType {
 	} //for storing stats per machine
   };
 
+function padZero(intValue, size) {
+    var s = String(intValue);
+    while (s.length < (size || 2)) {s = "0" + s;}
+    return s;
+}
+
+
+
 router.post('/mach_util', function(req, res, next) {
 	//machine utilization report
 	console.log('/reports/mach_util route');
@@ -730,7 +738,7 @@ router.post('/mach_util', function(req, res, next) {
 			//start date is already an asterisks
 			_endTime = "";
 		} else {
-			_endTime = "00:00:00";  //set to midnight
+			_endTime = "23:59:00";  //set to midnight
 		};
 	} else {
 		_endTime = req.body.endTime + ":00:00";
@@ -742,11 +750,14 @@ router.post('/mach_util', function(req, res, next) {
 	//find the start string, either a wild card or the start UTC
 	var startDate_utc = 0;
 	var reportStartDate_unix = 0;
+	var reportStartDate_str = "";
 	var searchStartDate_unix = 0;
+	var searchStartDate_str = "";
 	var startDate_str = ""; //start date as a string
 	var searchStartStr = "";
 	if (_startDate == "*") {
 		searchStartStr = "0";   //if it is a wild card then search from utc=0
+		searchStartDate_str = "*";
 	} else {
 		//not a wildcard
 		var tempStr = S(_startDate).left(4).toString(); 
@@ -763,21 +774,27 @@ router.post('/mach_util', function(req, res, next) {
 		var startMin = parseInt(tempStr4.substr(3,2));
 		var startSec = parseInt(tempStr4.substr(6,2));
 		startDate_utc = Date.UTC(startYear, startMonth, startDate, startHour, startMin, startSec);	
-		startDate_str = moment().unix(startDate_utc);
-		reportStartDate_unix = moment().unix(startDate_utc);
+		//startDate_str = moment().unix(startDate_utc);
+
+		startDate_str = padZero(startYear, 2) + "/" + padZero(startMonth, 2) + "/" + padZero(startDate, 2);	
+		reportStartDate_unix = moment(startDate_str, "YYYY/MM/DD").unix();
+
 		searchStartDate_unix = moment().unix(startDate_utc);
 		searchStartStr = S(startDate_utc).toString();
+		searchStartDate_str = moment.unix(reportStartDate_unix).format("MM/DD/YYYY HH:mm:SS");
 		};
 
 	//find the end date string
 	var endDate_utc = 0;
 	var reportEndDate_unix = 0;
+	var reportEndDate_str = "";
 	var searchEndDate_unix = 0;
 	var endDate_str = "";      //end date in string form
 	var searchEndStr = "";
 	if (_endDate == "*") {
 		endDate_utc = Date.UTC(3000, 12, 31, 0, 0, 0);	
 		searchEndStr = S(endDate_utc).toString();
+		searchEndDate_str = "*";
 	} else {
 		//not a wildcard
 		var tempStr = S(_endDate).left(4).toString(); 
@@ -788,16 +805,18 @@ router.post('/mach_util', function(req, res, next) {
 		
 		var tempStr3 = S(_endDate);
 		endDate = parseInt(tempStr3.substr(8,2));
-		
+
 		var tempStr4 = S(_endTime);
 		var endHour = parseInt(tempStr4.left(2));
 		var endMin = parseInt(tempStr4.substr(3,2));
 		var endSec = parseInt(tempStr4.substr(6,2));
-		endDate_utc = Date.UTC(endYear, endMonth, endDate, endHour, endMin, endSec);	
-		endDate_str = moment().unix(endDate_utc);
-		reportEndDate_unix = moment().unix(endDate_utc);
-		searchEndDate_unix = moment().unix(endDate_utc);
+		endDate_utc = Date.UTC(endYear, endMonth, endDate, endHour, endMin, endSec);
+		endDate_str = padZero(endYear, 2) + "/" + padZero(endMonth, 2) + "/" + padZero(endDate, 2);	
+		reportEndDate_unix = moment(endDate_str, "YYYY/MM/DD").unix();
+
+		searchEndDate_unix = moment.unix(endDate_utc);
 		searchEndStr = S(endDate_utc).toString();
+		searchEndDate_str = moment.unix(reportEndDate_unix).format("MM/DD/YYYY HH:mm:SS");
 	};
 	
 	var machUtilOutput = []; //mach utilization array for output 
@@ -836,7 +855,8 @@ router.post('/mach_util', function(req, res, next) {
 				endDate_utc = response[response.length-1].end_time_utc;
 				};
 
-			  reportStartDate_unix = moment(Date.UTC(4000, 01, 01)).unix;	
+			  var tempDate = moment("01/01/2300","MM/DD/YYYY");
+			  reportStartDate_unix = moment("01/01/2300","MM/DD/YYYY").unix();	
 			  reportEndDate_unix = 0;	
 			  for (var i = 0; i < response.length; i++) {
 				  //loop thru all of the response
@@ -844,7 +864,7 @@ router.post('/mach_util', function(req, res, next) {
 				  let respMachNum = parseInt(response[i].mach_num);
 
 				  var recStartTime_unix = moment(response[i].start_time_str).unix();
-				  var recEndTime_unix = moment(response[i].response[i].end_time_str).unix();
+				  var recEndTime_unix = moment(response[i].end_time_str).unix();
 				  if (recStartTime_unix < reportStartDate_unix)  reportStartDate_unix = recStartTime_unix;
 				  if (recEndTime_unix > reportEndDate_unix) reportEndDate_unix = recEndTime_unix;
 				  if (recStartTime_unix > reportEndDate_unix) reportEndDate_unix = recStartTime_unix;
@@ -860,41 +880,21 @@ router.post('/mach_util', function(req, res, next) {
 			  };
 
 			  let totAvailHrs = (reportEndDate_unix - reportStartDate_unix);
-console.log("end date = " + moment(reportEndDate_unix));
-console.log("start date = " + moment(reportStartDate_unix));			  
-console.log("tot avail hours #1 = " + totAvailHrs);			  
-			  totAvailHrs = totAvailHrs/1000/60/60;
-console.log("tot avail hours = " + totAvailHrs);			  
-			  //calc number of working days
-			  var startDayTest = moment.unix(startDate_utc/1000);
-			  var endDayTest = moment.unix(endDate_utc/1000);
-console.log("Start End Day:" );
-console.log(startDayTest);
-console.log(endDayTest);
-console.log(startDayTest <= endDayTest);
-console.log(startDayTest > endDayTest);	
-console.log(startDayTest.format("MM/DD/YYYYTHH:mm:SS"));		  
-console.log(endDayTest.format("MM/DD/YYYYTHH:mm:SS"));		  
-			  //.format("");  
-			  var day = new Date(startDate_utc);
-			  var businessDays = 0;
-			  var endDate = new Date(endDate_utc);
-			  
-console.log("counting num of business days");
-console.log("day gettime = " + day );
-console.log("end date = " + endDate );	
+			  //console.log("start after for loop = " + moment.unix(reportStartDate_unix).format("MM/DD/YYYY"));			  
+			  //console.log("end after for loop = " + moment.unix(reportEndDate_unix).format("MM/DD/YYYY"));			  
+			  reportStartDate_str = moment.unix(reportStartDate_unix).format("MM/DD/YYYY HH:mm:ss");
+			  reportEndDate_str = moment.unix(reportEndDate_unix).format("MM/DD/YYYY HH:mm:ss");
 
-console.log( day<= endDate);
-console.log( "sub tract");
-console.log( day-endDate);
-console.log(startDate_utc - endDate_utc);
+			  totAvailHrs = totAvailHrs/60/60;  //convert sec to hours
+			  var day = moment.unix(reportStartDate_unix);
+			  var endDate = moment.unix(reportEndDate_unix);
+			  var businessDays = 0;
+			  
 			  while (day <= endDate ) {
-console.log(day);				  
 				  if (day.day()!=0 && day.day()!=6) businessDays++;
-				  day.add(1,'d');
+				  day.add(1,'days');
 				}
 				
-console.log("business day =" + businessDays);				
 			  let prodHours = businessDays * 24.0;
 
 			  //different than other report, can calculate pecentages when done
@@ -920,7 +920,7 @@ console.log("business day =" + businessDays);
 					};   
 				};
 			  };
-console.log("out of loop");			  
+
 			  //now start the output
 			  //first record
 			  let machUtilOutputRec = new MachUtilOutputType(
@@ -937,7 +937,6 @@ console.log("out of loop");
 			  );
 			  machUtilOutput.push(machUtilOutputRec);
 
-console.log("off hours");			  
 			  machUtilOutputRec = new MachUtilOutputType(
 				"total off hrs",
 				machUtilTable[0].machOffHours.toFixed(2),
@@ -994,8 +993,24 @@ console.log("off hours");
 			  );
 			  machUtilOutput.push(machUtilOutputRec);
 
+			  //insert blank line
 			  machUtilOutputRec = new MachUtilOutputType(
 				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  //insert separator
+			  machUtilOutputRec = new MachUtilOutputType(
+				"hours incl sat & sun",
 				" ",
 				" ",
 				" ",
@@ -1035,7 +1050,37 @@ console.log("off hours");
 				machUtilTable[8].totPerUtil.toFixed(1)+"%"
 			  );
 			  machUtilOutput.push(machUtilOutputRec);
-		
+
+			  //insert blank line
+			  machUtilOutputRec = new MachUtilOutputType(
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+
+			  //insert separator
+			  machUtilOutputRec = new MachUtilOutputType(
+				"workday (mon-fri)",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" ",
+				" "
+			  );
+			  machUtilOutput.push(machUtilOutputRec);
+			  
 			  machUtilOutputRec = new MachUtilOutputType(
 				"total workday hrs",
 				machUtilTable[0].workHours.toFixed(2),
@@ -1064,10 +1109,11 @@ console.log("off hours");
 			  );
 			  machUtilOutput.push(machUtilOutputRec);
 		
-			  //console.log(videoListOutput);
-console.log("before render");			  
-			  res.render('report_mach_util', {outputObj: machUtilOutput} );
-			  //connection.end();
+			  res.render('report_mach_util', {searchStartDate: searchStartDate_str,
+				searchEndDate: searchEndDate_str,
+				reportStartDate: reportStartDate_str,  
+				reportEndDate: reportEndDate_str,
+				outputObj: machUtilOutput} );
 		  }); //query for read logfiles  
 		});  //query to write to user log	
 	} else {
