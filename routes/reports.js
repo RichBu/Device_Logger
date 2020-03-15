@@ -1340,7 +1340,7 @@ console.log("end time = " + _endTime);
 			  machUtilOutput.push(machUtilOutputRec);
 			  
 			  let deptProdOnPer = deptTotOnHrs / deptProdHours * 100.0;
-			  let deptProdOffPer = deptTotOffHrs / deptProdHours * 100.0;
+			  let deptProdOffPer = (100.0 - deptProdOnPer);
 			  machUtilOutputRec = new MachUtilOutputType(
 				"% workday usage",
 				deptProdOnPer.toFixed(1)+"%",
