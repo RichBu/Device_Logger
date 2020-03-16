@@ -140,15 +140,25 @@
 		<!-- Modal about  -->
 		<div id="modal-about" class="modal">
 			<div class="modal-content">
-				<h3>Report - Events by Time</h3>
+				<h3>Report - Machine Utilization</h3>
 				<div class="divider"></div>
 				<h4>
-					<br/>This report lists all of the events that happened with all of
-					devices / machines on the network.  The main log file polls all of
-					the devices / machines every minute.  The upload program written in
-					Visual C# cleans up each record and turns them into events.  So,
-					only device changes are listed here along with the time duration 
-					between the changes.
+					<br/>This report compiles all of the machine utilization rates
+					for all of the machines. 
+					
+					All of the data comes from a network of PLC wired as an 
+					industrial internet of things (IIoT) fashion.  The main log 
+					file polls all of the devices / machines every minute.  The 
+					upload program written in Visual C# cleans up each record and 
+					turns them into events.  
+					<br/>
+					<br/>
+					There are 3 utilization rates listed.  One is based on the time
+					span as read from the log file, the next one is the total hours
+					as calculated from the start time to the end time.  Lastly, a 
+					workday production rate is calculated.  This is the total hours
+					for just a Mon-Fri workweek.  So, if you see a workday % greater
+					than 100% then it means the machine was running over the weekend.
 					<br/>
 					<br/>
 					<br/> Rich Budek   RB@RichBudek.com
