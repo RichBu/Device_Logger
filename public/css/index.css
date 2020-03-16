@@ -281,11 +281,11 @@ input {
   }
 
   .backgroundIndexStyle {
-    background: url("/images/Calc_back_01.jpg") repeat center;
+    background: url("/images/IIoT_back_02.jpg") repeat center;
     position: absolute;
     top: 0px;
     left: 0px;
-    opacity: 0.2;
+    opacity: 0.1;
     min-height: 100%;
     height: 100%;
     width: 100%;

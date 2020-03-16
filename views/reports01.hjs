@@ -66,8 +66,10 @@
 						<input type="text" name="startTime" id='startTime' class="" placeholder="start time">	
 						<input type="text" name="endDate" id='endDate' class="" placeholder="end date YYYY/MM/DD">	
 						<input type="text" name="endTime" id='endTime' class="" placeholder="end time">	
+						<!--  none of the reports sort by machine yet
 						<input type="text" name="startMach" id='startMach' class="" placeholder="start dev/mach">	
 						<input type="text" name="endMach" id='endMach' class="" placeholder="end dev/mach">	
+						-->
 						</form>
 					</div>
 					<div class="row">
